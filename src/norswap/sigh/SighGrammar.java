@@ -229,7 +229,7 @@ public class SighGrammar extends Grammar
     public rule statement = lazy(() -> choice(
         this.block,
         this.var_decl,
-        this.lazy_fun_decl,
+        this.fun_decl,
         this.struct_decl,
         this.if_stmt,
         this.while_stmt,
@@ -263,20 +263,6 @@ public class SighGrammar extends Grammar
         seq(_fun, identifier, LPAREN, parameters, RPAREN, maybe_return_type, block)
         .push($ -> new FunDeclarationNode($.span(), $.$[0], $.$[1], $.$[2], $.$[3]));
 
-    public List<ReferenceNode> toReferences(List<ParameterNode> parameters)
-    {
-        List<ReferenceNode> references = new ArrayList<ReferenceNode>();
-
-        for (ParameterNode p: parameters) { references.add(new ReferenceNode(null, p.name)); }
-
-        return references;
-    }
-
-//    public boolean isVoidType (TypeNode node)
-//    {
-//        return (node instanceof SimpleTypeNode) && ((SimpleTypeNode) node).name.equals("Void");
-//    }
-
     public FunDeclarationNode makeLazy(FunDeclarationNode node)
     {
         // TODO Re-reference in block ?
@@ -292,11 +278,6 @@ public class SighGrammar extends Grammar
                         node.block),
                     new ReturnNode(null, new ReferenceNode(null, "_")))));
     }
-
-    public rule lazy_fun_decl =
-        seq(_lazy.as_val(true).or_push_null(), fun_decl)
-            .push($ -> {
-                return ($.$[0] == null) ? $.$[1] : makeLazy((FunDeclarationNode) $.$[1]); });
 
     public rule field_decl =
         seq(_var, identifier, COLON, type)

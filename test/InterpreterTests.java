@@ -3,6 +3,7 @@ import norswap.autumn.Grammar;
 import norswap.autumn.Grammar.rule;
 import norswap.autumn.ParseResult;
 import norswap.autumn.positions.LineMapString;
+import norswap.sigh.Expansion;
 import norswap.sigh.SemanticAnalysis;
 import norswap.sigh.SighGrammar;
 import norswap.sigh.ast.SighNode;
@@ -503,9 +504,14 @@ public final class InterpreterTests extends TestFixture {
                     "}" +
                     "return f(1)()", 1L);
 
-        // TODO fails
-//        check("lazy fun f (x: Int): Int { return x };" +
-//                    "return f(1)", 1L);
+        try {
+            String exp = Expansion.lazy("fun comp (x: Int): Int { return x*x }");
+            check(exp +
+                "var c: <(): Int> = comp(3);" +
+                "return c();", 9L);
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
     }
 
     // ---------------------------------------------------------------------------------------------

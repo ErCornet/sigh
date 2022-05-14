@@ -15,7 +15,7 @@ public final class FunType extends Type
 
     @Override public String name() {
         String[] params = NArrays.map(paramTypes, new String[0], Type::name);
-        return String.format("(%s) -> %s", String.join(",", params), returnType);
+        return String.format("<(%s): %s>", String.join(",", params), returnType.toString());
     }
 
     @Override public boolean equals (Object o) {

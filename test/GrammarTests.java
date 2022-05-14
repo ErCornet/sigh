@@ -1,4 +1,5 @@
 import norswap.autumn.AutumnTestFixture;
+import norswap.sigh.Expansion;
 import norswap.sigh.SighGrammar;
 import norswap.sigh.ast.*;
 import org.testng.annotations.Test;
@@ -211,9 +212,12 @@ public class GrammarTests extends AutumnTestFixture {
                             "}",
                             nodeForComparision);
 
-        // TODO Works here but fails from Semantic Analysis
-        successExpect("lazy fun f (x: Int): Int { return x }",
-                            nodeForComparision);
+        try {
+            String exp = Expansion.lazy("fun f (x: Int): Int { return x }");
+            successExpect(exp, nodeForComparision);
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
     }
 
     // ---------------------------------------------------------------------------------------------

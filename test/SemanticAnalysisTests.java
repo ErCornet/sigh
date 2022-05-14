@@ -1,5 +1,6 @@
 import norswap.autumn.AutumnTestFixture;
 import norswap.autumn.positions.LineMapString;
+import norswap.sigh.Expansion;
 import norswap.sigh.SemanticAnalysis;
 import norswap.sigh.SighGrammar;
 import norswap.sigh.ast.SighNode;
@@ -373,7 +374,20 @@ public final class SemanticAnalysisTests extends UraniumTestFixture
                         "return _" +
                     "}");
 
-        // TODO fails
-        successInput("lazy fun f() { }");
+        try {
+            String exp = Expansion.lazy("fun f (x: Int): Int { return x }");
+            successInput(exp);
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+
+        try {
+            String exp = Expansion.lazy("fun comp (x: Int): Int { return x*x }");
+            successInput(exp +
+                        "var c: <(): Int> = comp(3);" +
+                        "return c();");
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
     }
 }
