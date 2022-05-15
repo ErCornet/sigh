@@ -496,19 +496,59 @@ public final class InterpreterTests extends TestFixture {
     // ---------------------------------------------------------------------------------------------
 
     @Test public void testLazyEvaluation() {
-        check("fun f(x: Int): <(): Int> " +
-                    "{ " +
-                        "fun f_(x: Int): Int { return x }" +
-                        "fun _(): Int { return f_(x) }" +
-                        "return _" +
-                    "}" +
-                    "return f(1)()", 1L);
+        try {
+            String exp = Expansion.lazy("fun comp (x: Int): Int { return x*x }");
+            check(exp +
+                "var c: <(): Int> = comp(3);" +
+                "return c();", 9L);
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+
+        // TODO
+        try {
+            String exp = Expansion.lazy("fun comp (x: Int): Int { return x*x }");
+            check(exp+
+                "fun lazyFactorial(x: Int): <(): Int> " +
+                "{ " +
+                    "fun _(): Int { if(x > 1) return (x * lazyFactorial(x - 1)()) else return 1 }" +
+                    "return _" +
+                "}" +
+                "return lazyFactorial(6)()", 720L);
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
 
         try {
             String exp = Expansion.lazy("fun comp (x: Int): Int { return x*x }");
             check(exp +
                 "var c: <(): Int> = comp(3);" +
                 "return c();", 9L);
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+
+        try {
+            String exp = Expansion.lazy("fun comp (x: Int): Int { return x*x }");
+            check(exp +
+                "fun map(arr: Int[], size: Int, f: <(Int): <(): Int>>, arr_: <(): Int>[]): <(): Int>[]" +
+                "{" +
+                    "var i: Int = 0;" +
+                    "while (i < size) { arr_[i] = f(arr[i]); i=i+1 };" +
+                    "return arr_;" +
+                "};" +
+                "var arr: Int[] = [ 0, 1, 2, 3, 4 ];" +
+                "var arr_: <(): Int>[] = [null, null, null, null, null];" +
+                "fun activate(arr: <(): Int>[], size: Int, arr_: Int[]): Int[]" +
+                "{" +
+                    "var i: Int = 0;" +
+                    "while (i < size) { arr_[i] = arr[i](); i=i+1 };" +
+                    "return arr_;" +
+                "};" +
+                "map(arr, 5, comp, arr_);" +
+                "var res: Int[] = [ 0, 0, 0, 0, 0 ];"+
+                "activate(arr_, 5, res);" +
+                "return res", new Object[]{ 0L, 1L, 4L, 9L, 16L });
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
