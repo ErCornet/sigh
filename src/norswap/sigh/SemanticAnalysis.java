@@ -316,27 +316,6 @@ public final class SemanticAnalysis
 
     // ---------------------------------------------------------------------------------------------
 
-    private void funType (FunTypeNode node)
-    {
-        Attribute[] dependencies = new Attribute[node.parametersTypes.size() + 1];
-        dependencies[0] = node.returnType.attr("value");
-        forEachIndexed(node.parametersTypes, (i, parametersTypes) ->
-            dependencies[i + 1] = parametersTypes.attr("value"));
-
-        R.rule(node, "value")
-            .using(dependencies)
-            .by(r -> {
-                Type returnType  = r.get(0);
-                Type[] paramTypes = new Type[node.parametersTypes.size()];
-                for (int i = 0; i < paramTypes.length; ++i)
-                    paramTypes[i] = r.get(i + 1);
-
-                r.set(0, new FunType(returnType, paramTypes)); // the type of the assignment is the left-side type
-            });
-    }
-
-    // ---------------------------------------------------------------------------------------------
-
     private void parenthesized (ParenthesizedNode node)
     {
         R.rule(node, "type")
@@ -640,6 +619,27 @@ public final class SemanticAnalysis
                 .using(decl, "declared")
                 .by(Rule::copyFirst);
         });
+    }
+
+    // ---------------------------------------------------------------------------------------------
+
+    private void funType (FunTypeNode node)
+    {
+        Attribute[] dependencies = new Attribute[node.parametersTypes.size() + 1];
+        dependencies[0] = node.returnType.attr("value");
+        forEachIndexed(node.parametersTypes, (i, parametersTypes) ->
+            dependencies[i + 1] = parametersTypes.attr("value"));
+
+        R.rule(node, "value")
+            .using(dependencies)
+            .by(r -> {
+                Type returnType  = r.get(0);
+                Type[] paramTypes = new Type[node.parametersTypes.size()];
+                for (int i = 0; i < paramTypes.length; ++i)
+                    paramTypes[i] = r.get(i + 1);
+
+                r.set(0, new FunType(returnType, paramTypes)); // the type of the assignment is the left-side type
+            });
     }
 
     // ---------------------------------------------------------------------------------------------
