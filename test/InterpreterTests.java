@@ -353,11 +353,13 @@ public final class InterpreterTests extends TestFixture {
 
     @Test public void testConcatenativeProgramming()
     {
-        check("{fun addOne (x: Int): Int {return x + 1}; return 1 -> addOne}", 2L);
-        check("{fun one (): Int {return 1}; fun addOne (x: Int): Int {return x + 1}; return one() -> addOne}", 2L);
-        check("{fun halfOne (): Float {return 0.5}; fun addOne (x: Float): Float {return x + 1}; return halfOne() -> addOne}", 1.5d);
-        check("{fun one (): Int {return 1}; fun addOne (x: Int): Int {return x + 1}; fun timesTwo (x: Int): Int {return x * 2}; return one() -> addOne -> timesTwo}", 4L);
-        check("{fun one (): Int {return 1}; fun addOne (x: Int): Int {return x + 1}; fun timesTwo (x: Int): Int {return x * 2}; return one() -> timesTwo -> addOne}", 3L);
+        check("fun addOne(x: Int): Int {return x + 1}; return 1 -> addOne", 2L);
+        check("fun one(): Int {return 1}; fun addOne(x: Int): Int {return x + 1}; return one() -> addOne", 2L);
+        check("fun halfOne(): Float {return 0.5}; fun addOne(x: Float): Float {return x + 1}; return halfOne() -> addOne", 1.5d);
+        check("fun one(): Int {return 1}; fun addOne(x: Int): Int {return x + 1}; fun timesTwo(x: Int): Int {return x * 2}; return one() -> addOne -> timesTwo", 4L);
+        check("fun one(): Int {return 1}; fun addOne(x: Int): Int {return x + 1}; fun timesTwo(x: Int): Int {return x * 2}; return one() -> timesTwo -> addOne", 3L);
+
+        check("fun one(): Int {return 1}; fun exec(f: <(): Int>): Int {return f()}; return one -> exec", 1L);
     }
 
     // ---------------------------------------------------------------------------------------------

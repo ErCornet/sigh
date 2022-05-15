@@ -263,22 +263,6 @@ public class SighGrammar extends Grammar
         seq(_fun, identifier, LPAREN, parameters, RPAREN, maybe_return_type, block)
         .push($ -> new FunDeclarationNode($.span(), $.$[0], $.$[1], $.$[2], $.$[3]));
 
-    public FunDeclarationNode makeLazy(FunDeclarationNode node)
-    {
-        // TODO Re-reference in block ?
-        return
-        new FunDeclarationNode(null, node.name,
-            node.parameters,
-            new FunTypeNode(null, asList(), node.returnType),
-            new BlockNode(null,
-                asList(
-                    new FunDeclarationNode(node.span, "_",
-                        asList(),
-                        node.returnType,
-                        node.block),
-                    new ReturnNode(null, new ReferenceNode(null, "_")))));
-    }
-
     public rule field_decl =
         seq(_var, identifier, COLON, type)
         .push($ -> new FieldDeclarationNode($.span(), $.$[0], $.$[1]));
