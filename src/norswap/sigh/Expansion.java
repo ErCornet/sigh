@@ -95,7 +95,7 @@ public class Expansion
                             node.block),
                         new ReturnNode(null, new ReferenceNode(null, "_")))));
 
-        // TODO Rename References to node.name in block
+        // TODO Rename references from #node.name to "_" in #node.block
 
         return serialize(lazyFun);
     }
