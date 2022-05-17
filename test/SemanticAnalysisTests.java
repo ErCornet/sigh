@@ -304,11 +304,18 @@ public final class SemanticAnalysisTests extends UraniumTestFixture
     // ---------------------------------------------------------------------------------------------
 
     @Test public void testConcatenativeProgramming() {
-        successInput("{fun addOne (x: Int): Int {return x + 1}; return 1 -> addOne}");
-        successInput("{fun one (): Int {return 1}; fun addOne (x: Int): Int {return x + 1}; return one() -> addOne}");
-        successInput("{fun halfOne (): Float {return 0.5}; fun addOne (x: Float): Float {return x + 1}; return halfOne() -> addOne}");
+        successInput("{fun addOne(x: Int): Int {return x + 1}; return 1 -> addOne}");
+        successInput("{fun one(): Int {return 1}; fun addOne(x: Int): Int {return x + 1}; return one() -> addOne}");
+        successInput("{fun halfOne(): Float {return 0.5}; fun addOne(x: Float): Float {return x + 1}; return halfOne() -> addOne}");
 
-        failureInput("{fun one (): Int {return 1}; return halfOne() -> 1}");
+        failureInput("{fun one(): Int {return 1}; return halfOne() -> 1}");
+
+        successInput("{fun add(x: Int, y:Int): Int {return x + y}; return (1,2) -> add}");
+        successInput("{fun add(x: Int, y:Int): Int {return x + y}; var z: Int = (1,2) -> add; return (z,3) -> add}");
+
+        failureInput("{fun add(x: Int, y:Int): Int {return x + y}; return (1) -> add}");
+        failureInput("{fun add(x: Int, y:Int): Int {return x + y}; return (1,0.5) -> add}");
+        failureInput("{fun add(x: Int, y:Int): Int {return x + y}; return (1,2,3) -> add}");
     }
 
     // ---------------------------------------------------------------------------------------------

@@ -150,9 +150,9 @@ public class SighGrammar extends Grammar
             $ -> new FunCallNode($.span(), $.$[0], $.$[1]));
 
     public rule concat_expression = left_expression()
-        .operand(suffix_expression)
+        .operand(choice(suffix_expression, seq(LPAREN, suffix_expression.sep(0, ",").as_list(ExpressionNode.class), RPAREN)))
         .infix(ARROW_RIGHT,
-            $ -> new FunCallNode($.span(), $.$[1], Arrays.asList($.$[0])));
+            $ -> new FunCallNode($.span(), $.$[1], ($.$[0] instanceof List) ? $.$[0] : Arrays.asList($.$[0])));
 
     public rule prefix_expression = right_expression()
         .operand(concat_expression)

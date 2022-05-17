@@ -360,6 +360,13 @@ public final class InterpreterTests extends TestFixture {
         check("fun one(): Int {return 1}; fun addOne(x: Int): Int {return x + 1}; fun timesTwo(x: Int): Int {return x * 2}; return one() -> timesTwo -> addOne", 3L);
 
         check("fun one(): Int {return 1}; fun exec(f: <(): Int>): Int {return f()}; return one -> exec", 1L);
+
+        check("{fun add(x: Int, y:Int): Int {return x + y}; return (1,2) -> add}", 3L);
+        check("{fun add(x: Int, y:Int): Int {return x + y}; var z: Int = (1,2) -> add; return (z,3) -> add}", 6L);
+
+        checkThrows("{fun add(x: Int, y:Int): Int {return x + y}; return (1) -> add}", AssertionError.class);
+        checkThrows("{fun add(x: Int, y:Int): Int {return x + y}; return (1,0.5) -> add}", AssertionError.class);
+        checkThrows("{fun add(x: Int, y:Int): Int {return x + y}; return (1,2,3) -> add}", AssertionError.class);
     }
 
     // ---------------------------------------------------------------------------------------------
